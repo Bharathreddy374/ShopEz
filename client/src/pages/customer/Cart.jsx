@@ -2,19 +2,12 @@ import React, { useEffect, useState } from 'react'
 import '../../styles/Cart.css'
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 const Cart = () => {
 
   const [cartItems, setCartItems] = useState([]);
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("token"); // read from storage
-const config = {
-  headers: {
-    Authorization: `Bearer ${token}` // token goes here
-  }
-};
 
 
   useEffect(()=>{
@@ -24,7 +17,7 @@ const config = {
   const fetchCart = async() =>{
     const userId = localStorage.getItem('userId');
     if(userId){
-      await axios.get('http://localhost:6001/fetch-cart', config).then(
+      await axios.get('http://localhost:6001/fetch-cart').then(
         (response)=>{
           setCartItems(response.data.filter(item=> item.userId === userId).reverse());
         }
@@ -32,33 +25,33 @@ const config = {
     }
   }
 
-  // const increaseCartQuantity = async(id) =>{
-  //   await axios.put('http://localhost:6001/increase-cart-quantity', {id},config).then(
-  //     (response)=>{
-  //       fetchCart();
-  //     }
-  //   ).catch((err)=>{
-  //     // toast.success("operation failed")
-  //   })
-  // }
+  const increaseCartQuantity = async(id) =>{
+    await axios.put('http://localhost:6001/increase-cart-quantity', {id}).then(
+      (response)=>{
+        fetchCart();
+      }
+    ).catch((err)=>{
+      // alert("operation failed")
+    })
+  }
 
-  // const decreaseCartQuantity = async(id, quantity) =>{
-  //   if(quantity > 1){
-  //     await axios.put('http://localhost:6001/decrease-cart-quantity', {id},config).then(
-  //       (response)=>{
-  //         fetchCart();
-  //       }
-  //     ).catch((err)=>{
-  //       // toast.success("operation failed")
-  //     })
-  //   }else{
+  const decreaseCartQuantity = async(id, quantity) =>{
+    if(quantity > 1){
+      await axios.put('http://localhost:6001/decrease-cart-quantity', {id}).then(
+        (response)=>{
+          fetchCart();
+        }
+      ).catch((err)=>{
+        // alert("operation failed")
+      })
+    }else{
 
-  //     // remove item
-  //   }
-  // }
+      // remove item
+    }
+  }
 
   const removeItem = async(id) =>{
-      await axios.put('http://localhost:6001/remove-item', {id},config).then(
+      await axios.put('http://localhost:6001/remove-item', {id}).then(
         (response)=>{
           fetchCart();
         }
@@ -99,7 +92,7 @@ const config = {
     if(cartItems.length > 0){
         await axios.post('http://localhost:6001/place-cart-order', {userId, name, mobile, email, address, pincode, paymentMethod, orderDate: new Date()}).then(
           (response)=>{
-            toast.success('Order placed!!');
+            alert('Order placed!!');
             setName('');
             setMobile('');
             setEmail('');

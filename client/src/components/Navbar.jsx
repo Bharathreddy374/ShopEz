@@ -2,68 +2,38 @@ import React, { useContext, useEffect, useState } from 'react'
 import {BsCart3, BsPersonCircle} from 'react-icons/bs'
 import {FcSearch} from 'react-icons/fc'
 import '../styles/Navbar.css'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { GeneralContext } from '../context/GeneralContext'
 import {ImCancelCircle} from 'react-icons/im'
 import axios from 'axios'
 
 const Navbar = () => {
 
-  const token = localStorage.getItem("token");
-const config = {
-  headers: {
-    Authorization: `Bearer ${token}`
-  }
-};
+
   const navigate = useNavigate();
 
   const usertype = localStorage.getItem('userType');
   const username = localStorage.getItem('username');
 
-  const {logout} = useContext(GeneralContext);
+  const {cartCount, logout} = useContext(GeneralContext);
 
   const [productSearch, setProductSearch] = useState('');
 
   const [noResult, setNoResult] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [cartCount, setCartCount] = useState(0);
 
-useEffect(() => {
-  const fetchCartCount = async () => {
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-
-    if (!token || !userId) return;
-
-    try {
-      const res = await axios.get('http://localhost:6001/fetch-cart', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      const userItems = res.data.filter(item => item.userId === userId);
-      setCartCount(userItems.length);
-    } catch (err) {
-      console.error("Failed to fetch cart count", err);
-    }
-  };
-
-  fetchCartCount();
-}, []);
   useEffect(()=>{
     fetchData();
   }, [])
 
-  const fetchData = async () => {
-  try {
-    const response = await axios.get('http://localhost:6001/fetch-categories', config);
-    setCategories(response.data);
-  } catch (err) {
-    console.error("Failed to fetch categories", err);
-  }
-};
+  const fetchData = async() =>{
 
+    await axios.get('http://localhost:6001/fetch-categories').then(
+      (response)=>{
+        setCategories(response.data);
+      }
+    )
+  }
 
   const handleSearch = () =>{
     if (categories.includes(productSearch)){
@@ -105,7 +75,7 @@ useEffect(() => {
             {usertype === 'customer' ?
             
                 <div className="navbar">
-                  <h3 onClick={()=> navigate('/')}>ShopEZ</h3>
+                  <h3 onClick={()=> navigate('')}>ShopEZ</h3>
                   <div className="nav-content">
                     <div className="nav-search">
                       <input type="text" name="nav-search" id="nav-search" placeholder='Search Electronics, Fashion, mobiles, etc.,' onChange={(e)=>setProductSearch(e.target.value)} />
@@ -132,14 +102,12 @@ useEffect(() => {
                 </div>
 
               :
-                      // admin navbar
+
               <div className="navbar-admin">
                 <h3 onClick={()=> navigate('/admin')}>ShopEZ (admin)</h3>
                 
                 <ul>
                   <li onClick={()=> navigate('/admin')}>Home</li>
-                  <li onClick={()=> navigate('/banner-management')}>Banners</li>
-
                   <li onClick={()=> navigate('/all-users')}>Users</li>
                   <li onClick={()=> navigate('/all-orders')}>Orders</li>
                   <li onClick={()=> navigate('/all-products')}>Products</li>

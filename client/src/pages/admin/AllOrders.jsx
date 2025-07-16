@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import '../../styles/AllOrders.css'
 import axios from 'axios';
-import { toast } from 'react-toastify';
 
 const AllOrders = () => {
 
@@ -27,11 +26,11 @@ const AllOrders = () => {
   const  cancelOrder = async(id) =>{
     await axios.put('http://localhost:6001/cancel-order', {id}).then(
       (response)=>{
-        toast.success("Order cancelled!!");
+        alert("Order cancelled!!");
         fetchOrders();
       }
     ).catch((err)=>{
-      toast.success("Order cancellation failed!!");
+      alert("Order cancellation failed!!");
     })
   }
 
@@ -39,12 +38,12 @@ const AllOrders = () => {
   const updateOrderStatus = async(id) =>{
     await axios.put('http://localhost:6001/update-order-status', {id, updateStatus}).then(
       (response)=>{
-        toast.success("Order status updated!!");
+        alert("Order status updated!!");
         setUpdateStatus('');
         fetchOrders();
       }
     ).catch((err)=>{
-      toast.success("Order update failed!!");
+      alert("Order update failed!!");
     })
   }
 

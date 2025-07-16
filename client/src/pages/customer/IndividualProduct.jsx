@@ -4,15 +4,8 @@ import {HiOutlineArrowSmLeft} from 'react-icons/hi'
 import {useNavigate, useParams} from 'react-router-dom';
 import axios from 'axios';
 import { GeneralContext } from '../../context/GeneralContext';
-import { toast } from 'react-toastify';
 
 const IndividualProduct = () => {
-const token = localStorage.getItem("token"); // read from storage
-const config = {
-  headers: {
-    Authorization: `Bearer ${token}` // token goes here
-  }
-};
 
 const {id} = useParams();
 const navigate = useNavigate()
@@ -37,7 +30,7 @@ useEffect(()=>{
 },[])
 
 const fetchProduct = async () =>{
-    await axios.get(`http://localhost:6001/fetch-product-details/${id}`,config).then(
+    await axios.get(`http://localhost:6001/fetch-product-details/${id}`).then(
         (response)=>{
             setProductName(response.data.title);
             setProductDescription(response.data.description);
@@ -66,13 +59,13 @@ const [paymentMethod, setPaymentMethod] = useState('');
 
 
 const buyNow = async() =>{
-    await axios.post('http://localhost:6001/buy-product',{userId, name, email, mobile, address, pincode, title: productName, description: productDescription, mainImg: productMainImg, size, quantity: productQuantity, price: productPrice, discount: productDiscount, paymentMethod: paymentMethod, orderDate: new Date(),config}).then(
+    await axios.post('http://localhost:6001/buy-product',{userId, name, email, mobile, address, pincode, title: productName, description: productDescription, mainImg: productMainImg, size, quantity: productQuantity, price: productPrice, discount: productDiscount, paymentMethod: paymentMethod, orderDate: new Date()}).then(
         (response)=>{
-            toast.success('Order placed!!');
+            alert('Order placed!!');
             navigate('/profile');
         }
     ).catch((err)=>{
-        toast.success("Order failed!!");
+        alert("Order failed!!");
     })
 }
 
@@ -80,17 +73,17 @@ const buyNow = async() =>{
 const handleAddToCart = async() =>{
     await axios.post('http://localhost:6001/add-to-cart', {userId, title: productName, description: productDescription, mainImg: productMainImg, size, quantity: productQuantity, price: productPrice, discount: productDiscount}).then(
         (response)=>{
-            toast.success("product added to cart!!");
+            alert("product added to cart!!");
             navigate('/cart');
         }
     ).catch((err)=>{
-        toast.success("Operation failed!!");
+        alert("Operation failed!!");
     })
 }
 
   return (
     <div className="IndividualProduct-page">
-        <span onClick={()=> navigate('/')}> <HiOutlineArrowSmLeft /> <p>back</p></span>
+        <span onClick={()=> navigate('')}> <HiOutlineArrowSmLeft /> <p>back</p></span>
 
         <div className="IndividualProduct-body">
 

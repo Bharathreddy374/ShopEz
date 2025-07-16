@@ -1,5 +1,5 @@
 
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { GeneralContext } from '../context/GeneralContext';
 
 const Login = ({setIsLogin}) => {

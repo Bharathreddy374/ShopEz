@@ -23,6 +23,7 @@
 }
 
 .new-product-container button{
+
     width: 50%;
     margin-left: 25%;
 }
@@ -98,7 +99,7 @@
 
 .new-product-body section span{
     display: flex;
-justify-content: flex-start; /* ✅ better */
+    justify-content: start;
     gap: 30px;
 }
 

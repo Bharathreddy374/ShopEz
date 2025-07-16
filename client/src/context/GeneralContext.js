@@ -1,7 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
 
 export const GeneralContext = createContext();
 
@@ -25,14 +24,6 @@ const GeneralContextProvider = ({children}) => {
     fetchCartCount();
   }, [])
 
-  useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }
-}, []);
-
-
   const fetchCartCount = async() =>{
     const userId = localStorage.getItem('userId');
     if(userId){
@@ -52,26 +43,30 @@ const GeneralContextProvider = ({children}) => {
   
   
   
-  const login = async () => {
-  try {
-    const loginInputs = { email, password };
-    const res = await axios.post("http://localhost:6001/login", loginInputs);
+  const login = async () =>{
+    try{
+      const loginInputs = {email, password}
+        await axios.post('http://localhost:6001/login', loginInputs)
+        .then( async (res)=>{
 
-    localStorage.setItem("token", res.data.token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
-    localStorage.setItem("userId", res.data.user._id);
-    localStorage.setItem("userType", res.data.user.usertype);
-    localStorage.setItem("username", res.data.user.username);
-    localStorage.setItem("email", res.data.user.email);
-
-    navigate(res.data.user.usertype === 'admin' ? '/admin' : '/');
-    toast.success('Login successful!');
-  } catch (err) {
-    toast.error('Login failed. Check credentials.');
-    console.error(err);
-  }
-};
-
+          localStorage.setItem('userId', res.data._id);
+            localStorage.setItem('userType', res.data.usertype);
+            localStorage.setItem('username', res.data.username);
+            localStorage.setItem('email', res.data.email);
+            if(res.data.usertype === 'customer'){
+                navigate('/');
+            } else if(res.data.usertype === 'admin'){
+                navigate('/admin');
+            }
+          }).catch((err) =>{
+            alert("login failed!!");
+            console.log(err);
+          });
+          
+        }catch(err){
+          console.log(err);
+        }
+      }
       
   const inputs = {username, email, usertype, password};
 
@@ -83,7 +78,6 @@ const GeneralContextProvider = ({children}) => {
             localStorage.setItem('userType', res.data.usertype);
             localStorage.setItem('username', res.data.username);
             localStorage.setItem('email', res.data.email);
-toast.success('Login successful!');
 
             if(res.data.usertype === 'customer'){
                 navigate('/');
@@ -92,7 +86,7 @@ toast.success('Login successful!');
             }
 
         }).catch((err) =>{
-toast.error(' failed. Check credentials.');
+            alert("registration failed!!");
             console.log(err);
         });
     }catch(err){
@@ -105,9 +99,13 @@ toast.error(' failed. Check credentials.');
   const logout = async () =>{
     
     localStorage.clear();
-    toast.success('Logout successful!');
-
-    navigate('/auth');
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        localStorage.removeItem(key);
+      }
+    }
+    
+    navigate('/');
   }
 
 

@@ -6,22 +6,6 @@
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
 }
-.banner-thumbnails {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.banner-thumbnail {
-  width: 180px;
-  text-align: center;
-}
-
-.banner-thumbnail img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
 
 
 .admin-home-card{
@@ -48,22 +32,8 @@
     padding: 5px 25px;
     border-radius: 0.5rem;
 }
-.admin-banner-input button{
-
-    border: 1.5px solid #f08329df;
-    background-color: #30373f00;
-    color: #f08329df;
-    padding: 5px 25px;
-    border-radius: 0.5rem;
-}
 
 .admin-home-card button:hover{
-    background-color: #f08329df;
-    color: aliceblue;
-    padding: 5px 25px;
-    border-radius: 0.5rem;
-}
-.admin-banner-input button:hover{
     background-color: #f08329df;
     color: aliceblue;
     padding: 5px 25px;
@@ -72,16 +42,8 @@
 
 .admin-banner-input{
 
-    width: 44vw;
-    height:22vw;
-    padding: 4vh 3vw 4vb ;
-    margin-left: 110%;
-    margin-top: 22%;
-    color: rgb(193, 199, 205);
-    text-align: center;
-    background-color: #181818;
-    border-radius: 0.8rem;
-    border: 1px solid #4e4c4cc7;
+    width: 42vw;
+    padding: 4vh 3vw ;
 }
 .admin-banner-input h5{
 
@@ -100,4 +62,8 @@
 .admin-banner-input button{
 
     margin-top: 30px;
+}
+.admin-banner-input button:hover{
+
+    
 }

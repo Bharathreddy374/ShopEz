@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
 });
 
 const adminSchema = new mongoose.Schema({
-    banner: {type: [String],  default: []},
+    banner: {type: String},
     categories: {type: Array}
 });
 

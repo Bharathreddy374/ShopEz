@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import '../../styles/NewProducts.css'
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 const NewProduct = () => {
  
@@ -50,7 +49,7 @@ const NewProduct = () => {
   const handleNewProduct = async() =>{
     await axios.post('http://localhost:6001/add-new-product', {productName, productDescription, productMainImg, productCarousel: [productCarouselImg1, productCarouselImg2, productCarouselImg3], productSizes, productGender, productCategory, productNewCategory, productPrice, productDiscount}).then(
       (response)=>{
-        toast.success("product added");
+        alert("product added");
         setProductName('');
         setProductDescription('');
         setProductMainImg('');

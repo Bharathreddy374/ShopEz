@@ -4,12 +4,9 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import {Admin, Cart, Orders, Product, User } from './Schema.js'
-import jwt from "jsonwebtoken";
-import { verifyToken } from './middleware/auth.js';
 
 
 const app = express();
-const JWT_SECRET = process.env.JWT_SECRET; // move to .env in future
 
 app.use(express.json());
 app.use(bodyParser.json({limit: "30mb", extended: true}))
@@ -22,7 +19,7 @@ mongoose.connect('mongodb://localhost:27017/shop',{
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(()=>{
-            console.log("data base connected");
+
     app.post('/register', async (req, res) => {
         const { username, email, usertype, password } = req.body;
         try {
@@ -47,72 +44,44 @@ mongoose.connect('mongodb://localhost:27017/shop',{
 
 
 
+    app.post('/login', async (req, res) => {
+        const { email, password } = req.body;
+        try {
 
-
-app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const user = await User.findOne({ email });
-
-        if (!user) return res.status(401).json({ message: 'Invalid email or password' });
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
-
-        const token = jwt.sign(
-            { id: user._id, usertype: user.usertype },
-            JWT_SECRET,
-            { expiresIn: '2h' }
-        );
-
-        return res.json({
-            token,
-            user: {
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                usertype: user.usertype
+            const user = await User.findOne({ email });
+    
+            if (!user) {
+                return res.status(401).json({ message: 'Invalid email or password' });
             }
-        });
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: 'Server Error' });
-    }
-});
-
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return res.status(401).json({ message: 'Invalid email or password' });
+            } else{
+                return res.json(user);
+            }
+          
+        } catch (error) {
+          console.log(error);
+          return res.status(500).json({ message: 'Server Error' });
+        }
+    });
 
     // fetch banner
 
-    app.get('/fetch-banner',verifyToken, async(req, res)=>{
+    app.get('/fetch-banner', async(req, res)=>{
         try{
             const admin = await Admin.findOne();
-            res.json(admin.banner || []);
+            res.json(admin.banner);
 
         }catch(err){
             res.status(500).json({ message: 'Error occured' });
         }
     })
 
-    app.delete('/delete-banner/:index', verifyToken, async (req, res) => {
-  try {
-    const { index } = req.params;
-    const admin = await Admin.findOne();
 
-    if (!admin.banner || admin.banner.length <= index) {
-      return res.status(400).json({ message: 'Invalid index' });
-    }
-
-    admin.banner.splice(index, 1); // remove the banner
-    await admin.save();
-    res.json({ message: 'Banner deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error occurred' });
-  }
-});
     // fetch users
 
-    app.get('/fetch-users',verifyToken, async(req, res)=>{
+    app.get('/fetch-users', async(req, res)=>{
         try{
             const users = await User.find();
             res.json(users);
@@ -123,7 +92,7 @@ app.post('/login', async (req, res) => {
     })
 
      // Fetch individual product
-     app.get('/fetch-product-details/:id',verifyToken, async(req, res)=>{
+     app.get('/fetch-product-details/:id', async(req, res)=>{
         const id = req.params.id;
         try{
             const product = await Product.findById(id);
@@ -135,7 +104,7 @@ app.post('/login', async (req, res) => {
 
     // fetch products
 
-    app.get('/fetch-products',verifyToken, async(req, res)=>{
+    app.get('/fetch-products', async(req, res)=>{
         try{
             const products = await Product.find();
             res.json(products);
@@ -147,7 +116,7 @@ app.post('/login', async (req, res) => {
 
     // fetch orders
 
-    app.get('/fetch-orders',verifyToken, async(req, res)=>{
+    app.get('/fetch-orders', async(req, res)=>{
         try{
             const orders = await Orders.find();
             res.json(orders);
@@ -159,39 +128,26 @@ app.post('/login', async (req, res) => {
 
 
     // Fetch categories
-app.get('/fetch-categories', verifyToken, async(req, res) => {
-  try {
-    const admin = await Admin.findOne();
-    res.json(admin.categories); // This should be an array of strings
-  } catch (err) {
-    res.status(500).json({ message: "Error occurred" });
-  }
-});
 
+    app.get('/fetch-categories', async(req, res)=>{
+        try{
+            const data = await Admin.find();
+            if(data.length===0){
+                const newData = new Admin({banner: "", categories: []})
+                await newData.save();
+                return res.json(newData[0].categories);
+            }else{
+                return res.json(data[0].categories);
+            }
+        }catch(err){
+            res.status(500).json({message: "Error occured"});
+        }
+    })
 
-    // to get categories with their first product image
-app.get('/category-preview', verifyToken, async (req, res) => {
-  try {
-    const categories = await Admin.findOne(); // assuming single admin document
-    const categoryList = categories?.categories || [];
-
-    const results = await Promise.all(categoryList.map(async (cat) => {
-      const product = await Product.findOne({ category: cat });
-      return {
-        category: cat,
-        image: product?.mainImg || 'https://via.placeholder.com/300x200?text=No+Image',
-      };
-    }));
-
-    res.json(results);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching category previews' });
-  }
-});
 
     // Add new product
 
-    app.post('/add-new-product',verifyToken, async(req, res)=>{
+    app.post('/add-new-product', async(req, res)=>{
         const {productName, productDescription, productMainImg, productCarousel, productSizes, productGender, productCategory, productNewCategory, productPrice, productDiscount} = req.body;
         try{
             if(productCategory === 'new category'){
@@ -212,7 +168,7 @@ app.get('/category-preview', verifyToken, async (req, res) => {
 
     // update product
 
-    app.put('/update-product/:id',verifyToken, async(req, res)=>{
+    app.put('/update-product/:id', async(req, res)=>{
         const {productName, productDescription, productMainImg, productCarousel, productSizes, productGender, productCategory, productNewCategory, productPrice, productDiscount} = req.body;
         try{
             if(productCategory === 'new category'){
@@ -258,25 +214,30 @@ app.get('/category-preview', verifyToken, async (req, res) => {
 
     // Update banner
 
-    app.post('/update-banner', verifyToken, async (req, res) => {
-  const { banner } = req.body; // must be an array
-  try {
-    const admin = await Admin.findOne();
-    admin.banner = banner;
-    await admin.save();
-    res.json({ message: "Banner updated" });
-  } catch (err) {
-    res.status(500).json({ message: "Error occurred" });
-  }
-});
-
-
-    
+    app.post('/update-banner', async(req, res)=>{
+        const {banner} = req.body;
+        try{
+            const data = await Admin.find();
+            if(data.length===0){
+                const newData = new Admin({banner: banner, categories: []})
+                await newData.save();
+                res.json({message: "banner updated"});
+            }else{
+                const admin = await Admin.findOne();
+                admin.banner = banner;
+                await admin.save();
+                res.json({message: "banner updated"});
+            }
+            
+        }catch(err){
+            res.status(500).json({message: "Error occured"});
+        }
+    })
 
 
     // buy product
 
-    app.post('/buy-product',verifyToken, async(req, res)=>{
+    app.post('/buy-product', async(req, res)=>{
         const {userId, name, email, mobile, address, pincode, title, description, mainImg, size, quantity, price, discount, paymentMethod, orderDate} = req.body;
         try{
 
@@ -293,7 +254,7 @@ app.get('/category-preview', verifyToken, async (req, res) => {
    
     // cancel order
 
-    app.put('/cancel-order',verifyToken, async(req, res)=>{
+    app.put('/cancel-order', async(req, res)=>{
         const {id} = req.body;
         try{
 
@@ -310,7 +271,7 @@ app.get('/category-preview', verifyToken, async (req, res) => {
 
     // update order status
 
-    app.put('/update-order-status',verifyToken, async(req, res)=>{
+    app.put('/update-order-status', async(req, res)=>{
         const {id, updateStatus} = req.body;
         try{
 
@@ -327,7 +288,7 @@ app.get('/category-preview', verifyToken, async (req, res) => {
 
     // fetch cart items
 
-    app.get('/fetch-cart',verifyToken, async(req, res)=>{
+    app.get('/fetch-cart', async(req, res)=>{
         try{
             
             const items = await Cart.find();
@@ -359,7 +320,7 @@ app.get('/category-preview', verifyToken, async (req, res) => {
 
     // increase cart quantity
 
-    app.put('/increase-cart-quantity',verifyToken, async(req, res)=>{
+    app.put('/increase-cart-quantity', async(req, res)=>{
         const {id} = req.body;
         try{
             const item = await Cart.findById(id);
@@ -374,7 +335,7 @@ app.get('/category-preview', verifyToken, async (req, res) => {
 
     // decrease cart quantity
 
-    app.put('/decrease-cart-quantity',verifyToken, async(req, res)=>{
+    app.put('/decrease-cart-quantity', async(req, res)=>{
         const {id} = req.body;
         try{
             const item = await Cart.findById(id);
@@ -390,7 +351,7 @@ app.get('/category-preview', verifyToken, async (req, res) => {
 
     // remove from cart
 
-    app.put('/remove-item',verifyToken, async(req, res)=>{
+    app.put('/remove-item', async(req, res)=>{
         const {id} = req.body;
         try{
             const item = await Cart.deleteOne({_id: id});
@@ -403,7 +364,7 @@ app.get('/category-preview', verifyToken, async (req, res) => {
 
     // Order from cart
 
-    app.post('/place-cart-order',verifyToken, async(req, res)=>{
+    app.post('/place-cart-order', async(req, res)=>{
         const {userId, name, mobile, email, address, pincode, paymentMethod, orderDate} = req.body;
         try{
 

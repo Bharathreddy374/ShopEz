@@ -2,21 +2,10 @@ import React, { useContext, useEffect, useState } from 'react'
 import '../../styles/Profile.css'
 import { GeneralContext } from '../../context/GeneralContext'
 import axios from 'axios';
-import { toast } from 'react-toastify';
  
 const Profile = () => {
 
   const {logout} = useContext(GeneralContext);
-const token = localStorage.getItem("token"); // read from storage
-const config = {
-  headers: {
-    Authorization: `Bearer ${token}` // token goes here
-  }
-};
-  useEffect(() => {
-  console.log("TOKEN?", axios.defaults.headers.common['Authorization']); // should print Bearer XYZ
-  fetchOrders();
-}, []);
 
   const userId = localStorage.getItem('userId');
   const username = localStorage.getItem('username');
@@ -25,12 +14,12 @@ const config = {
   const [orders, setOrders] = useState([]);
 
 
-  // useEffect(()=>{
-  //   fetchOrders();
-  // },[fetchOrders])
+  useEffect(()=>{
+    fetchOrders();
+  },[])
 
   const fetchOrders = async () =>{
-    await axios.get(`http://localhost:6001/fetch-orders`,config).then(
+    await axios.get(`http://localhost:6001/fetch-orders`).then(
       (response)=>{
         setOrders(response.data.filter(order=> order.userId === userId).reverse());
       }
@@ -39,13 +28,13 @@ const config = {
 
 
   const  cancelOrder = async(id) =>{
-    await axios.put('http://localhost:6001/cancel-order', {id},config).then(
+    await axios.put('http://localhost:6001/cancel-order', {id}).then(
       (response)=>{
-        toast.success("Order cancelled!!");
+        alert("Order cancelled!!");
         fetchOrders();
       }
     ).catch((err)=>{
-      toast.success("Order cancellation failed!!");
+      alert("Order cancellation failed!!");
     })
   }
  

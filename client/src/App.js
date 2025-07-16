@@ -1,11 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar'
 import Home from './pages/Home';
 import Authentication from './pages/Authentication';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import Cart from './pages/customer/Cart';
 import Profile from './pages/customer/Profile';
@@ -18,80 +15,32 @@ import AllUsers from './pages/admin/AllUsers';
 import AllOrders from './pages/admin/AllOrders';
 import NewProduct from './pages/admin/NewProduct';
 import UpdateProduct from './pages/admin/UpdateProduct';
-import BannerManagement from './pages/admin/BannerManagement';
 
 function App() {
   return (
     <div className="App">
       
       <Navbar />
-      <ToastContainer position="top-right" autoClose={3000} />
+      
+      <Routes>
 
-<Routes>
-  <Route path="/auth" element={<Authentication />} />
-  <Route path="/" element={<Home />} />
+        <Route path='/auth' element={<Authentication />} />
 
-  {/* Customer Protected Routes */}
-  <Route path="/cart" element={
-    <ProtectedRoute allowedRoles={['customer']}>
-      <Cart />
-    </ProtectedRoute>
-  } />
-  <Route path="/profile" element={
-    <ProtectedRoute allowedRoles={['customer']}>
-      <Profile />
-    </ProtectedRoute>
-  } />
-  <Route path="/product/:id" element={
-    <ProtectedRoute allowedRoles={['customer']}>
-      <IndividualProduct />
-    </ProtectedRoute>
-  } />
-  <Route path="/category/:category" element={
-    <ProtectedRoute allowedRoles={['customer']}>
-      <CategoryProducts />
-    </ProtectedRoute>
-  } />
+        <Route exact path='' element={<Home />}/>
+        <Route path='/cart' element={<Cart />} />
+        <Route path='/product/:id' element={<IndividualProduct />} />
+        <Route path='/category/:category' element={<CategoryProducts />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='/auth' element={<Authentication />} />
 
-  {/* Admin Protected Routes */}
-  <Route path="/admin" element={
-    <ProtectedRoute allowedRoles={['admin']}>
-      <Admin />
-    </ProtectedRoute>
-  } />
-  <Route path="/all-products" element={
-    <ProtectedRoute allowedRoles={['admin']}>
-      <AllProducts />
-    </ProtectedRoute>
-  } />
-  <Route path="/all-users" element={
-    <ProtectedRoute allowedRoles={['admin']}>
-      <AllUsers />
-    </ProtectedRoute>
-  } />
-  <Route path="/all-orders" element={
-    <ProtectedRoute allowedRoles={['admin']}>
-      <AllOrders />
-    </ProtectedRoute>
-  } />
-  <Route path="/new-product" element={
-    <ProtectedRoute allowedRoles={['admin']}>
-      <NewProduct />
-    </ProtectedRoute>
-  } />
-  <Route path="/update-product/:id" element={
-    <ProtectedRoute allowedRoles={['admin']}>
-      <UpdateProduct />
-    </ProtectedRoute>
-  } />
-  <Route path="/banner-management" element={
-  <ProtectedRoute allowedRoles={['admin']}>
-    <BannerManagement />
-  </ProtectedRoute>
-} />
-</Routes>
+        <Route path='/admin' element={<Admin />} />
+        <Route path='/all-products' element={<AllProducts />} />
+        <Route path='/all-users' element={<AllUsers />} />
+        <Route path='/all-orders' element={<AllOrders />} />
+        <Route path='/new-product' element={<NewProduct />} />
+        <Route path='/update-product/:id' element={<UpdateProduct />} />
 
-
+      </Routes>
 
     </div>
   );

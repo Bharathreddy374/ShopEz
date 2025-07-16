@@ -30,6 +30,10 @@
     
 }
 
+.cartItem-data{
+
+
+}
 
 .cartItem-data h4{
     font-size: 1.1rem;
@@ -43,10 +47,11 @@
     font-size: 0.8rem;
     color: #7b828a;
 }
-.cartItem-data button{
-    background-color: rgb(253, 54, 54);
-}
 
+.cartItem-data span{
+
+    
+}
 
 .cartItem-data span h5{
     font-size: 0.9rem;
@@ -60,14 +65,21 @@
     
 }
 
+.cartItem-data button{
+
+    
+}
 
 .cartItem-inputs{
     display: flex;
     gap: 40px;
-justify-content: flex-start; /* ✅ better */
+    justify-content: start;
     align-items: center;
 }
 
+.cartItem-inputs span{
+
+}
 
 .cartItem-inputs span p{
  display: flex;   
@@ -75,7 +87,9 @@ justify-content: flex-start; /* ✅ better */
  margin: 0;
 }
 
-
+.cartItem-inputs span p b{
+    
+}
 
 .cartItem-inputs div{
     /* width: 20vw; */
@@ -132,7 +146,10 @@ justify-content: flex-start; /* ✅ better */
     margin-bottom: 10px;
 }
 
+.cartPriceBody hr{
 
+    
+}
 
 .cartPriceBody h5{
 

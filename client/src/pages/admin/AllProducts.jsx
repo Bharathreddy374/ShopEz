@@ -75,7 +75,7 @@ const AllProducts = () => {
         }else{
             setVisibleProducts(products);
         }
-      }, [categoryFilter, genderFilter,products])
+      }, [categoryFilter, genderFilter])
 
 
   return (
@@ -133,6 +133,7 @@ const AllProducts = () => {
                                 </div>
                             )
                         })}
+ 
                     </div>
                 </div>
                 <div className="all-product-filter-gender">

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import '../../styles/NewProducts.css'
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import {useNavigate, useParams} from 'react-router-dom';
 
 const UpdateProduct = () => {
@@ -75,7 +74,7 @@ const UpdateProduct = () => {
   const handleUpdateProduct = async() =>{
     await axios.put(`http://localhost:6001/update-product/${id}`, {productName, productDescription, productMainImg, productCarousel: [productCarouselImg1, productCarouselImg2, productCarouselImg3], productSizes, productGender, productCategory, productNewCategory, productPrice, productDiscount}).then(
       (response)=>{
-        toast.success("product updated");
+        alert("product updated");
         setProductName('');
         setProductDescription('');
         setProductMainImg('');
